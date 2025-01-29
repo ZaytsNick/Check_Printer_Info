@@ -1,18 +1,28 @@
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
+#include <sstream>
 #include <iostream>
 #include <string>
+#include <vector>
+#include <math.h>
+struct dataForRequest{
+    dataForRequest(const std::string& _ip) : printerIP(_ip) {}
+    std::string community = "public";
+    std::string printerIP = "192.168.173.24";
+};
+// std::vector<dataForRequest> 
 
-void queryPrinter(const std::string &ip, const std::string &community) {
+// const dataForRequest data
+void queryPrinter(const dataForRequest &data) {
     // Инициализация SNMP
     init_snmp("printer_query");
 
     // Создание сессии
     struct snmp_session session, *ss;
     snmp_sess_init(&session);
-    session.peername = strdup(ip.c_str());
-    session.community = (u_char *)community.c_str();
-    session.community_len = community.length();
+    session.peername = strdup(data.printerIP.c_str());
+    session.community = (u_char *)data.community.c_str();
+    session.community_len = data.community.length();
     session.version = SNMP_VERSION_2c;
 
     ss = snmp_open(&session);
@@ -56,7 +66,7 @@ void queryPrinter(const std::string &ip, const std::string &community) {
         }
         std::cout<<std::endl;
     } else {
-        std::cerr << "Error in SNMP request." << std::endl;
+        std::cerr << "Error in SNMP request." <<data.printerIP << std::endl;
     }
 
     if (response) {
@@ -64,25 +74,35 @@ void queryPrinter(const std::string &ip, const std::string &community) {
     }
 
     snmp_close(ss);
+}   
+
+void searchSnmpAgents(std::string network, size_t netmask){
+    int countHosts=pow(2,32-netmask)-2;
+   std::cout<<countHosts<<std::endl;
+   int ip[4]{0,0,0,0};
+   std::cout<<ip[0]<<'.'<<ip[1]<<'.'<<ip[2]<<'.'<<ip[3]<<std::endl;
+
+   std::stringstream s;
+   s<<network;
+   for(auto &i:ip)
+   {
+   std::string a;
+   std::getline(s,a,'.');
+    i=std::stoi(a);
+   }
+   std::cout<<ip[0]<<'.'<<ip[1]<<'.'<<ip[2]<<'.'<<ip[3]<<std::endl;
+   for(int i=1;i<=countHosts;i++)
+   {
+    std::string a=std::to_string(ip[0])+'.'+std::to_string(ip[1])+'.'+std::to_string(ip[2]+(i/256))+'.'+std::to_string((ip[3]+i)%256);
+    dataForRequest b(a);
+    queryPrinter(b);
+    std::cout<<b.printerIP<<"/"<<b.community<<std::endl;
+   }
 }
 
+
 int main() {
-    // std::string printerIP;
-    // std::string community;
-
-  std::string printerIP = "192.168.173.24";//"192.168.173.24";  // IP принтера
-    std::string community = "public"; // SNMP Community
-
-    // std::cout << "Enter printer IP: ";
-    // // std::cin >> printerIP;
-    // std::cout << "Enter SNMP community (default: public): ";
-    // // std::cin >> community;
-
-    if (community.empty()) {
-        community = "public";
-    }
-
-    queryPrinter(printerIP, community);
-
+    
+    searchSnmpAgents("192.168.173.0",24);
     return 0;
 }
