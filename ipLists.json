@@ -1,0 +1,20 @@
+{
+    "Snmp_Agent": [
+        {
+            "community": "public",
+            "printer_IP": "192.168.8.45"
+        },
+        {
+            "community": "public",
+            "printer_IP": "192.168.8.35"
+        },
+        {
+            "community": "public",
+            "printer_IP": "192.168.8.236"
+        },
+        {
+            "community": "public",
+            "printer_IP": "192.168.8.138"
+        }
+    ]
+}
