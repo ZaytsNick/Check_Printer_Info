@@ -104,7 +104,8 @@ tmpMetric queryPrinter(/*const*/ dataForRequest data) {
   // Ответ от SNMP-сервера
   netsnmp_pdu *response = nullptr; // Инициализация на случай ошибки
   if (!ss) {
-    snmp_perror("snmp_open");
+    snmp_perror("snmp_open");   
+    tmp.ip="0"; 
     return tmp; // return;
   }
   int status = snmp_synch_response(ss, pdu, &response);
