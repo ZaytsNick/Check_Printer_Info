@@ -19,37 +19,51 @@ find_library(SNMP_STATIC3_LIBRARY libnetsnmphelpers.a PATHS /usr/local/lib/)
 # Найдем OpenSSL через pkg-config
 
 # Указываем путь к MIB-файлам
-set(MIB_PATHS "${CMAKE_SOURCE_DIR}/mibs")
+# set(MIB_PATHS "${CMAKE_SOURCE_DIR}/mibs")
 
-file(GLOB MIB_FILES ${MIB_PATHS}/*.txt)
+# file(GLOB MIB_FILES ${MIB_PATHS}/*.txt)
 
 # Добавляем исполняемый файл
 add_executable(CheckPrinterInfo main.cpp)
 
+set(CMAKE_C_COMPILER "gcc")
+set(CMAKE_CXX_COMPILER "g++")
+
 target_sources(CheckPrinterInfo PRIVATE ${MIB_FILES})
 
-add_compile_options(-fno-builtin-memcpy)
+# add_compile_options(-fno-builtin-memcpy)
     target_link_libraries(CheckPrinterInfo PRIVATE    
     -static
-    -L/usr/lib
-    -L/usr/local/lib64
-    ${SNMP_STATIC1_LIBRARY}
-    ${SNMP_STATIC2_LIBRARY}
-    ${SNMP_STATIC3_LIBRARY}
+    # -L/usr/lib
+    # -L/usr/local/lib64
+    # ${SNMP_STATIC1_LIBRARY}
+    # ${SNMP_STATIC2_LIBRARY}
+    # ${SNMP_STATIC3_LIBRARY}
+    /usr/local/net-snmp/lib/libnetsnmp.a
+    /usr/local/net-snmp/lib/libnetsnmpagent.a
+    /usr/local/net-snmp/lib/libnetsnmphelpers.a
 
-    ${PROMETHEUS1_LIBRARY}
-    ${PROMETHEUS2_LIBRARY}
-    ${PROMETHEUS3_LIBRARY}
+    # ${PROMETHEUS1_LIBRARY}
+    # ${PROMETHEUS2_LIBRARY}
+    # ${PROMETHEUS3_LIBRARY}
+    /usr/local/lib/libprometheus-cpp-pull.a
+    /usr/local/lib/libprometheus-cpp-push.a
+    /usr/local/lib/libprometheus-cpp-core.a
 
-        /usr/lib/libssl.a
-        /usr/local/lib64/libcrypto.a
-    
+
+        # /usr/lib/libssl.a
+        # /usr/local/lib64/libcrypto.a
+    /usr/local/openssl/lib/libssl.a       # Статическая библиотека SSL
+    /usr/local/openssl/lib/libcrypto.a    # Статическая библиотека Crypto
         -static-libgcc
         -static-libstdc++
         stdc++fs
-        -lz
-        -lm
-        -lc
+        # -lz
+        /usr/lib/libz.a
+        # -lm
+        # /usr/lib/musl/lib/libm.a
+        # -lc
+        # /usr/lib/musl/lib/libc.a
 
     )
 
