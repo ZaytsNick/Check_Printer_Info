@@ -1,4 +1,5 @@
 {
+    "Srv_ip": "127.0.0.1:8080",
     "Snmp_Agent": [
         {
             "community": "public",
